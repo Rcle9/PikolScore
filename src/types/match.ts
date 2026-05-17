@@ -1,5 +1,4 @@
 export type TeamKey = "A" | "B";
-
 export type MatchMode = "singles" | "doubles";
 
 export type Team = {
@@ -7,6 +6,7 @@ export type Team = {
   players: string[];
   score: number;
   setsWon: number;
+  timeoutsLeft: number;
 };
 
 export type MatchSettings = {
@@ -19,17 +19,27 @@ export type MatchSettings = {
 export type MatchState = {
   teamA: Team;
   teamB: Team;
+
   servingTeam: TeamKey;
   serverIndex: number;
   serverNumber: 1 | 2;
+
   setNumber: number;
   rallyCount: number;
   longestStreak: number;
   currentStreak: number;
   currentStreakTeam: TeamKey | null;
+
   matchOver: boolean;
   winner: TeamKey | null;
   startedAt: number;
+
+  timeoutActive: boolean;
+  timeoutTeam: TeamKey | null;
+  timeoutStartedAt: number | null;
+
+  courtSwapped: boolean;
+
   settings: MatchSettings;
 };
 

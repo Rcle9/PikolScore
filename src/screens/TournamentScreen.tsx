@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   SafeAreaView,
@@ -30,6 +30,7 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
 
   const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [timeoutSecondsLeft, setTimeoutSecondsLeft] = useState(60);
 
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
@@ -42,6 +43,48 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
   const currentServerName = currentServerTeam.players[state.serverIndex];
   const servingCourt = getServingCourt(state);
 
+  const teamATimeouts = state.teamA.timeoutsLeft ?? 2;
+  const teamBTimeouts = state.teamB.timeoutsLeft ?? 2;
+
+  const leftTeam = state.courtSwapped ? state.teamB : state.teamA;
+  const rightTeam = state.courtSwapped ? state.teamA : state.teamB;
+  const leftKey = state.courtSwapped ? "B" : "A";
+  const rightKey = state.courtSwapped ? "A" : "B";
+
+  const teamAMatchPoint =
+    !state.matchOver &&
+    state.teamA.score >= state.settings.pointLimit - 1 &&
+    state.teamA.score > state.teamB.score;
+
+  const teamBMatchPoint =
+    !state.matchOver &&
+    state.teamB.score >= state.settings.pointLimit - 1 &&
+    state.teamB.score > state.teamA.score;
+
+  useEffect(() => {
+    if (!state.timeoutActive || !state.timeoutStartedAt) {
+      setTimeoutSecondsLeft(60);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - state.timeoutStartedAt!) / 1000);
+      const remaining = Math.max(0, 60 - elapsed);
+
+      setTimeoutSecondsLeft(remaining);
+
+      if (remaining <= 0) {
+        match.resumePlay();
+      }
+    }, 500);
+
+    return () => clearInterval(timer);
+  }, [state.timeoutActive, state.timeoutStartedAt]);
+
+  function formatTimeout(seconds: number) {
+    return `0:${seconds.toString().padStart(2, "0")}`;
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar hidden />
@@ -52,8 +95,18 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
             ● LIVE MATCH
           </Text>
 
-          <Text style={[styles.matchInfo, isVerySmallHeight && styles.matchInfoCompact]}>
-            GAME {state.setNumber} • BEST OF {state.settings.bestOf}
+          <Text
+            style={[
+              styles.matchInfo,
+              isVerySmallHeight && styles.matchInfoCompact,
+            ]}
+          >
+            GAME {state.setNumber} • BEST OF {state.settings.bestOf} •{" "}
+            {state.settings.mode.toUpperCase()}
+          </Text>
+
+          <Text style={styles.sideInfo}>
+            LEFT: {leftTeam.name} • RIGHT: {rightTeam.name}
           </Text>
         </View>
 
@@ -65,22 +118,31 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
           ]}
         >
           <TournamentScoreCard
-            team={state.teamA}
-            active={state.servingTeam === "A"}
+            team={leftTeam}
+            active={state.servingTeam === leftKey}
             compact={isSmallHeight}
-            onPress={() => match.scoreRally("A")}
+            matchPoint={leftKey === "A" ? teamAMatchPoint : teamBMatchPoint}
+            onPress={() => match.scoreRally(leftKey)}
           />
 
           <TournamentScoreCard
-            team={state.teamB}
-            active={state.servingTeam === "B"}
+            team={rightTeam}
+            active={state.servingTeam === rightKey}
             compact={isSmallHeight}
-            onPress={() => match.scoreRally("B")}
+            matchPoint={rightKey === "A" ? teamAMatchPoint : teamBMatchPoint}
+            onPress={() => match.scoreRally(rightKey)}
           />
         </View>
 
-        <View style={[styles.serverBox, isVerySmallHeight && styles.serverBoxCompact]}>
-          <Text style={[styles.officialScore, isSmallHeight && styles.officialScoreCompact]}>
+        <View
+          style={[styles.serverBox, isVerySmallHeight && styles.serverBoxCompact]}
+        >
+          <Text
+            style={[
+              styles.officialScore,
+              isSmallHeight && styles.officialScoreCompact,
+            ]}
+          >
             {state.teamA.score} - {state.teamB.score} - {state.serverNumber}
           </Text>
 
@@ -91,15 +153,51 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
             SERVER: {currentServerName}
           </Text>
 
-          <Text style={[styles.serverSub, isSmallHeight && styles.serverSubCompact]}>
-            {state.serverNumber === 1 ? "1ST SERVER" : "2ND SERVER"}
+          <Text
+            style={[styles.serverSub, isSmallHeight && styles.serverSubCompact]}
+          >
+            {state.settings.mode === "singles"
+              ? "SERVER"
+              : state.serverNumber === 1
+              ? "1ST SERVER"
+              : "2ND SERVER"}
           </Text>
 
-          <View style={[styles.courtBadge, isSmallHeight && styles.courtBadgeCompact]}>
-            <Text style={[styles.courtText, isSmallHeight && styles.courtTextCompact]}>
+          <View
+            style={[styles.courtBadge, isSmallHeight && styles.courtBadgeCompact]}
+          >
+            <Text
+              style={[styles.courtText, isSmallHeight && styles.courtTextCompact]}
+            >
               {servingCourt}
             </Text>
           </View>
+        </View>
+
+        <View
+          style={[styles.timeoutRow, isVerySmallHeight && styles.controlsCompact]}
+        >
+          <TouchableOpacity
+            style={[
+              styles.timeoutBtn,
+              (state.timeoutActive || teamATimeouts <= 0) && styles.disabledBtn,
+            ]}
+            onPress={() => match.callTimeout("A")}
+            disabled={state.timeoutActive || teamATimeouts <= 0}
+          >
+            <Text style={styles.timeoutText}>TO A ({teamATimeouts})</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.timeoutBtn,
+              (state.timeoutActive || teamBTimeouts <= 0) && styles.disabledBtn,
+            ]}
+            onPress={() => match.callTimeout("B")}
+            disabled={state.timeoutActive || teamBTimeouts <= 0}
+          >
+            <Text style={styles.timeoutText}>TO B ({teamBTimeouts})</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={[styles.controls, isVerySmallHeight && styles.controlsCompact]}>
@@ -112,6 +210,10 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
             onPress={() => setHistoryOpen(true)}
           >
             <Text style={styles.controlText}>HISTORY</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.controlBtn} onPress={match.switchSides}>
+            <Text style={styles.controlText}>SWITCH</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -132,6 +234,26 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
           </TouchableOpacity>
         </View>
       </View>
+
+      {state.timeoutActive && (
+        <View style={styles.timeoutOverlay}>
+          <Text style={styles.timeoutTitle}>TIMEOUT</Text>
+
+          <Text style={styles.timeoutTeam}>
+            {state.timeoutTeam === "A" ? state.teamA.name : state.teamB.name}
+          </Text>
+
+          <Text style={styles.timeoutTimer}>
+            {formatTimeout(timeoutSecondsLeft)}
+          </Text>
+
+          <Text style={styles.timeoutSub}>Scoring is paused</Text>
+
+          <TouchableOpacity style={styles.resumeBtn} onPress={match.resumePlay}>
+            <Text style={styles.resumeText}>Resume Play</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <CelebrationModal
         message={match.celebration}
@@ -212,6 +334,12 @@ const styles = StyleSheet.create({
   matchInfoCompact: {
     fontSize: 12,
   },
+  sideInfo: {
+    color: colors.neon,
+    fontSize: 11,
+    fontWeight: "900",
+    marginTop: 4,
+  },
   scoreboard: {
     flex: 1,
     gap: 10,
@@ -284,20 +412,43 @@ const styles = StyleSheet.create({
   courtTextCompact: {
     fontSize: 12,
   },
-  controls: {
+  timeoutRow: {
     flexDirection: "row",
     gap: 8,
-    paddingTop: 10,
+    paddingTop: 6,
+  },
+  timeoutBtn: {
+    flex: 1,
+    backgroundColor: "#101827",
+    borderWidth: 1,
+    borderColor: colors.neon,
+    height: 44,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  timeoutText: {
+    color: colors.neon,
+    fontWeight: "900",
+    fontSize: 11,
+  },
+  disabledBtn: {
+    opacity: 0.35,
+  },
+  controls: {
+    flexDirection: "row",
+    gap: 6,
+    paddingTop: 8,
   },
   controlsCompact: {
-    paddingTop: 6,
+    paddingTop: 5,
   },
   controlBtn: {
     flex: 1,
     backgroundColor: "#08101C",
     borderWidth: 1,
     borderColor: "#1E293B",
-    height: 50,
+    height: 48,
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
@@ -305,14 +456,14 @@ const styles = StyleSheet.create({
   controlText: {
     color: colors.text,
     fontWeight: "900",
-    fontSize: 11,
+    fontSize: 10,
   },
   resetBtn: {
     flex: 1,
     backgroundColor: "#2A0E0E",
     borderWidth: 1,
     borderColor: colors.orange,
-    height: 50,
+    height: 48,
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
@@ -320,7 +471,54 @@ const styles = StyleSheet.create({
   resetText: {
     color: colors.orange,
     fontWeight: "900",
-    fontSize: 11,
+    fontSize: 10,
+  },
+  timeoutOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.88)",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 100,
+    padding: 24,
+  },
+  timeoutTitle: {
+    color: colors.orange,
+    fontSize: 52,
+    fontWeight: "900",
+  },
+  timeoutTeam: {
+    color: colors.text,
+    fontSize: 28,
+    fontWeight: "900",
+    marginTop: 10,
+    textAlign: "center",
+  },
+  timeoutTimer: {
+    color: colors.neon,
+    fontSize: 76,
+    fontWeight: "900",
+    marginTop: 14,
+  },
+  timeoutSub: {
+    color: colors.muted,
+    fontWeight: "800",
+    marginTop: 8,
+  },
+  resumeBtn: {
+    marginTop: 24,
+    backgroundColor: colors.neon,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 18,
+  },
+  resumeText: {
+    color: "#020617",
+    fontWeight: "900",
+    fontSize: 16,
   },
   winnerBanner: {
     position: "absolute",

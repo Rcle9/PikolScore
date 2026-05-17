@@ -7,12 +7,14 @@ export function createInitialMatchState(): MatchState {
       players: ["Player A1", "Player A2"],
       score: 0,
       setsWon: 0,
+      timeoutsLeft: 2,
     },
     teamB: {
       name: "TEAM B",
       players: ["Player B1", "Player B2"],
       score: 0,
       setsWon: 0,
+      timeoutsLeft: 2,
     },
     servingTeam: "A",
     serverIndex: 0,
@@ -25,6 +27,13 @@ export function createInitialMatchState(): MatchState {
     matchOver: false,
     winner: null,
     startedAt: Date.now(),
+
+    timeoutActive: false,
+    timeoutTeam: null,
+    timeoutStartedAt: null,
+
+    courtSwapped: false,
+
     settings: {
       bestOf: 1,
       pointLimit: 11,
@@ -39,7 +48,10 @@ export function getServingTeam(state: MatchState) {
 }
 
 export function getServerName(state: MatchState) {
-  return getServingTeam(state).players[state.serverIndex] || getServingTeam(state).players[0];
+  return (
+    getServingTeam(state).players[state.serverIndex] ||
+    getServingTeam(state).players[0]
+  );
 }
 
 export function getServerDisplay(state: MatchState) {
@@ -71,6 +83,10 @@ export function scoreRallyEngine(state: MatchState, rallyWinner: TeamKey) {
 
   if (newState.matchOver) {
     return { newState, message: "Match already finished" };
+  }
+
+  if (newState.timeoutActive) {
+    return { newState, message: "Timeout active" };
   }
 
   const isSingles = newState.settings.mode === "singles";
@@ -145,6 +161,7 @@ export function scoreRallyEngine(state: MatchState, rallyWinner: TeamKey) {
       newState.servingTeam = setWinner;
       newState.serverIndex = 0;
       newState.serverNumber = isSingles ? 1 : 2;
+      newState.courtSwapped = !newState.courtSwapped;
       message = "SET WON";
     }
   }

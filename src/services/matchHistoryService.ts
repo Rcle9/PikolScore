@@ -28,10 +28,13 @@ export async function saveMatchHistory(
     rally_count: state.rallyCount,
     longest_streak: state.longestStreak,
     duration_seconds: durationSeconds,
-    history: history,
+    history,
   });
 
-  if (error) throw error;
+  if (error) {
+    console.log("Save match history error:", error);
+    throw error;
+  }
 
   return data;
 }
@@ -42,16 +45,33 @@ export async function getMatchHistory() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.log("Fetch match history error:", error);
+    throw error;
+  }
 
-  return data;
+  return data || [];
 }
 
 export async function deleteMatchHistory(id: string) {
-  const { error } = await supabase
+  console.log("Supabase deleting id:", id);
+
+  if (!id) {
+    throw new Error("Missing match id");
+  }
+
+  const { data, error } = await supabase
     .from("match_history")
     .delete()
-    .eq("id", id);
+    .eq("id", id)
+    .select();
 
-  if (error) throw error;
+  if (error) {
+    console.log("Delete match history error:", error);
+    throw error;
+  }
+
+  console.log("Deleted rows:", data);
+
+  return data;
 }
