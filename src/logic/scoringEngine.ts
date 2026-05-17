@@ -29,6 +29,7 @@ export function createInitialMatchState(): MatchState {
       bestOf: 1,
       pointLimit: 11,
       winByTwo: true,
+      mode: "doubles",
     },
   };
 }
@@ -38,10 +39,11 @@ export function getServingTeam(state: MatchState) {
 }
 
 export function getServerName(state: MatchState) {
-  return getServingTeam(state).players[state.serverIndex];
+  return getServingTeam(state).players[state.serverIndex] || getServingTeam(state).players[0];
 }
 
 export function getServerDisplay(state: MatchState) {
+  if (state.settings.mode === "singles") return "Server";
   return state.serverNumber === 1 ? "1st Server" : "2nd Server";
 }
 
@@ -64,13 +66,14 @@ export function isGameWon(a: number, b: number, state: MatchState) {
 }
 
 export function scoreRallyEngine(state: MatchState, rallyWinner: TeamKey) {
-  let newState: MatchState = JSON.parse(JSON.stringify(state));
+  const newState: MatchState = JSON.parse(JSON.stringify(state));
   let message = "";
 
   if (newState.matchOver) {
     return { newState, message: "Match already finished" };
   }
 
+  const isSingles = newState.settings.mode === "singles";
   const servingTeamWon = rallyWinner === newState.servingTeam;
 
   if (servingTeamWon) {
@@ -81,18 +84,27 @@ export function scoreRallyEngine(state: MatchState, rallyWinner: TeamKey) {
       rallyWinner === "A" ? newState.teamA.name : newState.teamB.name
     } scored`;
 
-    // Serving player stays serving after scoring.
-    // Server side changes based on score only.
-  } else {
-    if (newState.serverNumber === 1) {
-      newState.serverNumber = 2;
-      newState.serverIndex = newState.serverIndex === 0 ? 1 : 0;
-      message = "2nd server";
-    } else {
-      newState.servingTeam = newState.servingTeam === "A" ? "B" : "A";
-      newState.serverNumber = 1;
+    if (isSingles) {
       newState.serverIndex = 0;
+      newState.serverNumber = 1;
+    }
+  } else {
+    if (isSingles) {
+      newState.servingTeam = rallyWinner;
+      newState.serverIndex = 0;
+      newState.serverNumber = 1;
       message = "Side out";
+    } else {
+      if (newState.serverNumber === 1) {
+        newState.serverNumber = 2;
+        newState.serverIndex = newState.serverIndex === 0 ? 1 : 0;
+        message = "2nd server";
+      } else {
+        newState.servingTeam = rallyWinner;
+        newState.serverNumber = 1;
+        newState.serverIndex = 0;
+        message = "Side out";
+      }
     }
   }
 
@@ -131,8 +143,8 @@ export function scoreRallyEngine(state: MatchState, rallyWinner: TeamKey) {
       newState.teamA.score = 0;
       newState.teamB.score = 0;
       newState.servingTeam = setWinner;
-      newState.serverNumber = 2;
       newState.serverIndex = 0;
+      newState.serverNumber = isSingles ? 1 : 2;
       message = "SET WON";
     }
   }

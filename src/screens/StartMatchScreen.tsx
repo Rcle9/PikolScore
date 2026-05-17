@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { createInitialMatchState } from "../logic/scoringEngine";
-import { MatchState, TeamKey } from "../types/match";
+import { MatchMode, MatchState, TeamKey } from "../types/match";
 import { colors } from "../styles/theme";
 import { loadMatchState } from "../storage/storage";
 
@@ -21,13 +21,15 @@ type Props = {
 export default function StartMatchScreen({ onStart }: Props) {
   const [savedMatch, setSavedMatch] = useState<MatchState | null>(null);
 
-  const [teamAName, setTeamAName] = useState("TEAM A");
-  const [teamBName, setTeamBName] = useState("TEAM B");
+  const [mode, setMode] = useState<MatchMode>("doubles");
 
-  const [playerA1, setPlayerA1] = useState("Player A1");
-  const [playerA2, setPlayerA2] = useState("Player A2");
-  const [playerB1, setPlayerB1] = useState("Player B1");
-  const [playerB2, setPlayerB2] = useState("Player B2");
+  const [teamAName, setTeamAName] = useState("");
+  const [teamBName, setTeamBName] = useState("");
+
+  const [playerA1, setPlayerA1] = useState("");
+  const [playerA2, setPlayerA2] = useState("");
+  const [playerB1, setPlayerB1] = useState("");
+  const [playerB2, setPlayerB2] = useState("");
 
   const [bestOf, setBestOf] = useState<1 | 3 | 5>(1);
   const [pointLimit, setPointLimit] = useState<11 | 15 | 21>(11);
@@ -58,22 +60,35 @@ export default function StartMatchScreen({ onStart }: Props) {
       ...fresh,
       teamA: {
         ...fresh.teamA,
-        name: teamAName || "TEAM A",
-        players: [playerA1 || "Player A1", playerA2 || "Player A2"],
+        name: teamAName.trim() || "TEAM A",
+        players:
+          mode === "singles"
+            ? [playerA1.trim() || "Player A"]
+            : [
+                playerA1.trim() || "Player A1",
+                playerA2.trim() || "Player A2",
+              ],
       },
       teamB: {
         ...fresh.teamB,
-        name: teamBName || "TEAM B",
-        players: [playerB1 || "Player B1", playerB2 || "Player B2"],
+        name: teamBName.trim() || "TEAM B",
+        players:
+          mode === "singles"
+            ? [playerB1.trim() || "Player B"]
+            : [
+                playerB1.trim() || "Player B1",
+                playerB2.trim() || "Player B2",
+              ],
       },
       servingTeam: firstServeTeam,
       serverIndex: 0,
-      serverNumber: 2,
+      serverNumber: mode === "singles" ? 1 : 2,
       startedAt: Date.now(),
       settings: {
         bestOf,
         pointLimit,
         winByTwo,
+        mode,
       },
     };
 
@@ -97,13 +112,33 @@ export default function StartMatchScreen({ onStart }: Props) {
         )}
 
         <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Match Mode</Text>
+
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[styles.choice, mode === "singles" && styles.activeChoice]}
+              onPress={() => setMode("singles")}
+            >
+              <Text style={styles.choiceText}>Singles</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.choice, mode === "doubles" && styles.activeChoice]}
+              onPress={() => setMode("doubles")}
+            >
+              <Text style={styles.choiceText}>Doubles</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.card}>
           <Text style={styles.sectionTitle}>Team A</Text>
 
           <TextInput
             style={styles.input}
             value={teamAName}
             onChangeText={setTeamAName}
-            placeholder="Team A Name"
+            placeholder="Enter Team A Name"
             placeholderTextColor={colors.muted}
           />
 
@@ -111,17 +146,19 @@ export default function StartMatchScreen({ onStart }: Props) {
             style={styles.input}
             value={playerA1}
             onChangeText={setPlayerA1}
-            placeholder="Player A1"
+            placeholder={mode === "singles" ? "Enter Player A Name" : "Enter Player A1 Name"}
             placeholderTextColor={colors.muted}
           />
 
-          <TextInput
-            style={styles.input}
-            value={playerA2}
-            onChangeText={setPlayerA2}
-            placeholder="Player A2"
-            placeholderTextColor={colors.muted}
-          />
+          {mode === "doubles" && (
+            <TextInput
+              style={styles.input}
+              value={playerA2}
+              onChangeText={setPlayerA2}
+              placeholder="Enter Player A2 Name"
+              placeholderTextColor={colors.muted}
+            />
+          )}
         </View>
 
         <View style={styles.card}>
@@ -131,7 +168,7 @@ export default function StartMatchScreen({ onStart }: Props) {
             style={styles.input}
             value={teamBName}
             onChangeText={setTeamBName}
-            placeholder="Team B Name"
+            placeholder="Enter Team B Name"
             placeholderTextColor={colors.muted}
           />
 
@@ -139,17 +176,19 @@ export default function StartMatchScreen({ onStart }: Props) {
             style={styles.input}
             value={playerB1}
             onChangeText={setPlayerB1}
-            placeholder="Player B1"
+            placeholder={mode === "singles" ? "Enter Player B Name" : "Enter Player B1 Name"}
             placeholderTextColor={colors.muted}
           />
 
-          <TextInput
-            style={styles.input}
-            value={playerB2}
-            onChangeText={setPlayerB2}
-            placeholder="Player B2"
-            placeholderTextColor={colors.muted}
-          />
+          {mode === "doubles" && (
+            <TextInput
+              style={styles.input}
+              value={playerB2}
+              onChangeText={setPlayerB2}
+              placeholder="Enter Player B2 Name"
+              placeholderTextColor={colors.muted}
+            />
+          )}
         </View>
 
         <View style={styles.card}>
@@ -212,7 +251,11 @@ export default function StartMatchScreen({ onStart }: Props) {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.note}>Official pickleball starts at 0-0-2.</Text>
+          <Text style={styles.note}>
+            {mode === "doubles"
+              ? "Official doubles starts at 0-0-2."
+              : "Singles starts at 0-0-1."}
+          </Text>
         </View>
 
         <TouchableOpacity style={styles.startBtn} onPress={startMatch}>

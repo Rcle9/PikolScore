@@ -1,5 +1,7 @@
 export type TeamKey = "A" | "B";
 
+export type MatchMode = "singles" | "doubles";
+
 export type Team = {
   name: string;
   players: string[];
@@ -11,6 +13,7 @@ export type MatchSettings = {
   bestOf: 1 | 3 | 5;
   pointLimit: 11 | 15 | 21;
   winByTwo: boolean;
+  mode: MatchMode;
 };
 
 export type MatchState = {
