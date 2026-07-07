@@ -1,13 +1,20 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Session } from "@supabase/supabase-js";
 
 import LoadingScreen from "./src/screens/LoadingScreen";
 import AuthScreen from "./src/screens/AuthScreen";
+=======
+import React, { useState } from "react";
+
+import LoadingScreen from "./src/screens/LoadingScreen";
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 import StartMatchScreen from "./src/screens/StartMatchScreen";
 import TournamentScreen from "./src/screens/TournamentScreen";
 
 import { MatchState } from "./src/types/match";
+<<<<<<< HEAD
 import { supabase } from "./src/lib/supabase";
 import { colors } from "./src/styles/theme";
 
@@ -62,10 +69,24 @@ export default function App() {
 
   if (!session) {
     return <AuthScreen />;
+=======
+
+export default function App() {
+  const [loading, setLoading] = useState(true);
+
+  const [started, setStarted] = useState(false);
+
+  const [initialState, setInitialState] =
+    useState<MatchState | null>(null);
+
+  if (loading) {
+    return <LoadingScreen onFinish={() => setLoading(false)} />;
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   }
 
   if (!started) {
     return (
+<<<<<<< HEAD
       <View style={styles.appWrap}>
         <View style={styles.userBar}>
           <Text style={styles.email} numberOfLines={1}>
@@ -84,6 +105,14 @@ export default function App() {
           }}
         />
       </View>
+=======
+      <StartMatchScreen
+        onStart={(state) => {
+          setInitialState(state);
+          setStarted(true);
+        }}
+      />
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
     );
   }
 
@@ -96,6 +125,7 @@ export default function App() {
       }}
     />
   );
+<<<<<<< HEAD
 }
 
 const styles = StyleSheet.create({
@@ -143,3 +173,6 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
 });
+=======
+}
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa

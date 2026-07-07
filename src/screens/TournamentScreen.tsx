@@ -17,7 +17,10 @@ import TournamentScoreCard from "../components/TournamentScoreCard";
 import DatabaseHistoryScreen from "./DatabaseHistoryScreen";
 import SettingsModal from "./SettingsModal";
 import CelebrationModal from "../components/CelebrationModal";
+<<<<<<< HEAD
 import { announceStartScore } from "../hooks/useVoiceAnnouncer";
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 import { colors } from "../styles/theme";
 
 type Props = {
@@ -34,7 +37,10 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
   const [timeoutSecondsLeft, setTimeoutSecondsLeft] = useState(60);
 
   const { width, height } = useWindowDimensions();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   const isLandscape = width > height;
   const isSmallHeight = height < 760;
   const isVerySmallHeight = height < 690;
@@ -42,9 +48,13 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
   const currentServerTeam =
     state.servingTeam === "A" ? state.teamA : state.teamB;
 
+<<<<<<< HEAD
   const currentServerName =
     currentServerTeam.players[state.serverIndex] || currentServerTeam.players[0];
 
+=======
+  const currentServerName = currentServerTeam.players[state.serverIndex];
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   const servingCourt = getServingCourt(state);
 
   const teamATimeouts = state.teamA.timeoutsLeft ?? 2;
@@ -52,7 +62,10 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
 
   const leftTeam = state.courtSwapped ? state.teamB : state.teamA;
   const rightTeam = state.courtSwapped ? state.teamA : state.teamB;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   const leftKey = state.courtSwapped ? "B" : "A";
   const rightKey = state.courtSwapped ? "A" : "B";
 
@@ -66,6 +79,7 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
     state.teamB.score >= state.settings.pointLimit - 1 &&
     state.teamB.score > state.teamA.score;
 
+<<<<<<< HEAD
   const servingScore =
     state.servingTeam === "A" ? state.teamA.score : state.teamB.score;
 
@@ -85,6 +99,8 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
     return () => clearTimeout(timer);
   }, []);
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   useEffect(() => {
     if (!state.timeoutActive || !state.timeoutStartedAt) {
       setTimeoutSecondsLeft(60);
@@ -161,6 +177,7 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
         <View
           style={[styles.serverBox, isVerySmallHeight && styles.serverBoxCompact]}
         >
+<<<<<<< HEAD
           <View style={styles.officialScoreBox}>
             <View style={styles.scoreColumn}>
               <Text
@@ -217,6 +234,16 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
               <Text style={styles.scoreLabel}>SERVICE</Text>
             </View>
           </View>
+=======
+          <Text
+            style={[
+              styles.officialScore,
+              isSmallHeight && styles.officialScoreCompact,
+            ]}
+          >
+            {state.teamA.score} - {state.teamB.score} - {state.serverNumber}
+          </Text>
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 
           <Text
             style={[styles.serverText, isSmallHeight && styles.serverTextCompact]}
@@ -272,9 +299,13 @@ export default function TournamentScreen({ initialState, onNewMatch }: Props) {
           </TouchableOpacity>
         </View>
 
+<<<<<<< HEAD
         <View
           style={[styles.controls, isVerySmallHeight && styles.controlsCompact]}
         >
+=======
+        <View style={[styles.controls, isVerySmallHeight && styles.controlsCompact]}>
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
           <TouchableOpacity style={styles.controlBtn} onPress={match.undo}>
             <Text style={styles.controlText}>UNDO</Text>
           </TouchableOpacity>
@@ -375,35 +406,53 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#020617",
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   content: {
     flex: 1,
     paddingHorizontal: 12,
     paddingBottom: 10,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   topBar: {
     alignItems: "center",
     paddingTop: 10,
     paddingBottom: 8,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   topBarCompact: {
     paddingTop: 4,
     paddingBottom: 4,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   live: {
     color: colors.neon,
     fontSize: 23,
     fontWeight: "900",
     textAlign: "center",
   },
+<<<<<<< HEAD
 
   liveCompact: {
     fontSize: 18,
   },
 
+=======
+  liveCompact: {
+    fontSize: 18,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   matchInfo: {
     color: colors.muted,
     marginTop: 2,
@@ -411,22 +460,32 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
   },
+<<<<<<< HEAD
 
   matchInfoCompact: {
     fontSize: 12,
   },
 
+=======
+  matchInfoCompact: {
+    fontSize: 12,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   sideInfo: {
     color: colors.neon,
     fontSize: 11,
     fontWeight: "900",
     marginTop: 4,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   scoreboard: {
     flex: 1,
     gap: 10,
   },
+<<<<<<< HEAD
 
   scoreboardCompact: {
     gap: 8,
@@ -440,10 +499,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 
+=======
+  scoreboardCompact: {
+    gap: 8,
+  },
+  portrait: {
+    flexDirection: "column",
+  },
+  landscape: {
+    flexDirection: "row",
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   serverBox: {
     alignItems: "center",
     paddingVertical: 8,
   },
+<<<<<<< HEAD
 
   serverBoxCompact: {
     paddingVertical: 4,
@@ -503,10 +574,26 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
+=======
+  serverBoxCompact: {
+    paddingVertical: 4,
+  },
+  officialScore: {
+    color: colors.orange,
+    fontSize: 48,
+    fontWeight: "900",
+    lineHeight: 54,
+  },
+  officialScoreCompact: {
+    fontSize: 38,
+    lineHeight: 42,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   serverText: {
     color: colors.text,
     fontSize: 22,
     fontWeight: "900",
+<<<<<<< HEAD
     marginTop: 8,
     maxWidth: "95%",
   },
@@ -515,17 +602,31 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
 
+=======
+    marginTop: 2,
+    maxWidth: "95%",
+  },
+  serverTextCompact: {
+    fontSize: 17,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   serverSub: {
     color: colors.neon,
     fontSize: 16,
     fontWeight: "900",
     marginTop: 2,
   },
+<<<<<<< HEAD
 
   serverSubCompact: {
     fontSize: 13,
   },
 
+=======
+  serverSubCompact: {
+    fontSize: 13,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   courtBadge: {
     marginTop: 8,
     backgroundColor: "#102215",
@@ -535,30 +636,45 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 7,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   courtBadgeCompact: {
     marginTop: 5,
     paddingHorizontal: 14,
     paddingVertical: 5,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   courtText: {
     color: colors.neon,
     fontSize: 13,
     fontWeight: "900",
     textAlign: "center",
   },
+<<<<<<< HEAD
 
   courtTextCompact: {
     fontSize: 12,
   },
 
+=======
+  courtTextCompact: {
+    fontSize: 12,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutRow: {
     flexDirection: "row",
     gap: 8,
     paddingTop: 6,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutBtn: {
     flex: 1,
     backgroundColor: "#101827",
@@ -569,27 +685,42 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutText: {
     color: colors.neon,
     fontWeight: "900",
     fontSize: 11,
   },
+<<<<<<< HEAD
 
   disabledBtn: {
     opacity: 0.35,
   },
 
+=======
+  disabledBtn: {
+    opacity: 0.35,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   controls: {
     flexDirection: "row",
     gap: 6,
     paddingTop: 8,
   },
+<<<<<<< HEAD
 
   controlsCompact: {
     paddingTop: 5,
   },
 
+=======
+  controlsCompact: {
+    paddingTop: 5,
+  },
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   controlBtn: {
     flex: 1,
     backgroundColor: "#08101C",
@@ -600,13 +731,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   controlText: {
     color: colors.text,
     fontWeight: "900",
     fontSize: 10,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   resetBtn: {
     flex: 1,
     backgroundColor: "#2A0E0E",
@@ -617,13 +754,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   resetText: {
     color: colors.orange,
     fontWeight: "900",
     fontSize: 10,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutOverlay: {
     position: "absolute",
     top: 0,
@@ -636,13 +779,19 @@ const styles = StyleSheet.create({
     zIndex: 100,
     padding: 24,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutTitle: {
     color: colors.orange,
     fontSize: 52,
     fontWeight: "900",
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutTeam: {
     color: colors.text,
     fontSize: 28,
@@ -650,20 +799,29 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: "center",
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutTimer: {
     color: colors.neon,
     fontSize: 76,
     fontWeight: "900",
     marginTop: 14,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   timeoutSub: {
     color: colors.muted,
     fontWeight: "800",
     marginTop: 8,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   resumeBtn: {
     marginTop: 24,
     backgroundColor: colors.neon,
@@ -671,13 +829,19 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 18,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   resumeText: {
     color: "#020617",
     fontWeight: "900",
     fontSize: 16,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   winnerBanner: {
     position: "absolute",
     bottom: 78,
@@ -689,13 +853,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 50,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   winnerText: {
     color: "#020617",
     fontSize: 18,
     fontWeight: "900",
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   newGameBtn: {
     backgroundColor: "#020617",
     paddingHorizontal: 18,
@@ -703,7 +873,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginTop: 10,
   },
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   newGameText: {
     color: colors.neon,
     fontWeight: "900",

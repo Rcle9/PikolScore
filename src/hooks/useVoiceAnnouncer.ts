@@ -15,15 +15,27 @@ function speak(text: string) {
   });
 }
 
+<<<<<<< HEAD
 export function getOfficialScoreCall(
+=======
+function officialScoreCall(
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
   teamAScore: number,
   teamBScore: number,
   serverNumber: number,
   servingTeam: TeamKey
 ) {
+<<<<<<< HEAD
   return servingTeam === "A"
     ? `${teamAScore} ${teamBScore} ${serverNumber}`
     : `${teamBScore} ${teamAScore} ${serverNumber}`;
+=======
+  if (servingTeam === "A") {
+    return `${teamAScore} ${teamBScore} ${serverNumber}`;
+  }
+
+  return `${teamBScore} ${teamAScore} ${serverNumber}`;
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 }
 
 export function announceScore(
@@ -32,6 +44,7 @@ export function announceScore(
   serverNumber: number,
   servingTeam: TeamKey
 ) {
+<<<<<<< HEAD
   speak(getOfficialScoreCall(teamAScore, teamBScore, serverNumber, servingTeam));
 }
 
@@ -42,6 +55,9 @@ export function announceStartScore(
   servingTeam: TeamKey
 ) {
   speak(getOfficialScoreCall(teamAScore, teamBScore, serverNumber, servingTeam));
+=======
+  speak(officialScoreCall(teamAScore, teamBScore, serverNumber, servingTeam));
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 }
 
 export function announceSideOut(
@@ -59,12 +75,16 @@ export function announceSideOut(
     onDone: () => {
       setTimeout(() => {
         Speech.speak(
+<<<<<<< HEAD
           getOfficialScoreCall(
             teamAScore,
             teamBScore,
             serverNumber,
             servingTeam
           ),
+=======
+          officialScoreCall(teamAScore, teamBScore, serverNumber, servingTeam),
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
           {
             rate: 0.85,
             pitch: 1,
@@ -76,6 +96,7 @@ export function announceSideOut(
   });
 }
 
+<<<<<<< HEAD
 export function announceSecondServer(
   teamAScore: number,
   teamBScore: number,
@@ -101,6 +122,10 @@ export function announceSecondServer(
       }, 600);
     },
   });
+=======
+export function announceSecondServer() {
+  speak("Second server");
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 }
 
 export function announceWinner(teamName: string, score: string) {
@@ -118,7 +143,10 @@ export function announceResumePlay() {
 export function announceSwitchSides() {
   speak("Switch sides");
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 export function announceMatchPoint(teamName: string) {
   speak(`Match point ${teamName}`);
 }

@@ -170,6 +170,7 @@ export function useMatch(initialState?: MatchState | null) {
     }
 
     if (result.message === "2nd server") {
+<<<<<<< HEAD
   announceSecondServer(
     newState.teamA.score,
     newState.teamB.score,
@@ -180,6 +181,12 @@ export function useMatch(initialState?: MatchState | null) {
   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
   return;
 }
+=======
+      announceSecondServer();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      return;
+    }
+>>>>>>> 94e3cae3c44360180896855606db2479985c62fa
 
     announceScore(
       newState.teamA.score,
