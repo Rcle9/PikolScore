@@ -1,0 +1,51 @@
+export type TeamKey = "A" | "B";
+export type MatchMode = "singles" | "doubles";
+
+export type Team = {
+  name: string;
+  players: string[];
+  score: number;
+  setsWon: number;
+  timeoutsLeft: number;
+};
+
+export type MatchSettings = {
+  bestOf: 1 | 3 | 5;
+  pointLimit: 11 | 15 | 21;
+  winByTwo: boolean;
+  mode: MatchMode;
+};
+
+export type MatchState = {
+  teamA: Team;
+  teamB: Team;
+
+  servingTeam: TeamKey;
+  serverIndex: number;
+  serverNumber: 1 | 2;
+
+  setNumber: number;
+  rallyCount: number;
+  longestStreak: number;
+  currentStreak: number;
+  currentStreakTeam: TeamKey | null;
+
+  matchOver: boolean;
+  winner: TeamKey | null;
+  startedAt: number;
+
+  timeoutActive: boolean;
+  timeoutTeam: TeamKey | null;
+  timeoutStartedAt: number | null;
+
+  courtSwapped: boolean;
+
+  settings: MatchSettings;
+};
+
+export type HistoryItem = MatchState & {
+  id: number;
+  message: string;
+  rallyWinner: TeamKey;
+  scoreAfter: string;
+};
